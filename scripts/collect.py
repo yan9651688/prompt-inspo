@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""易拓灵感 · 每日采集脚本
+"""灵感图鉴 · 每日采集脚本
 
 从 X (Twitter) 搜索结果中挑出「真正附带提示词原文」的 AI 生图帖子，
 下载缩略图并写入 data/YYYY-MM-DD.json 与 data/index.json。

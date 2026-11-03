@@ -15,7 +15,11 @@
     (!state.q || (e.prompt + e.title + e.author + e.author_name).toLowerCase().includes(state.q));
 
   function card(e) {
-    const imgs = e.images.map((src, i) => `<img loading="lazy" src="${esc(src)}" data-full="${esc(e.remote_images[i] || src)}" alt="${esc(e.title)}">`).join("");
+    const imgs = e.images.map((src, i) => {
+      const thumb = (e.thumbs && e.thumbs[i]) || src;
+      const full = (e.remote_images && e.remote_images[i]) || src;
+      return `<img loading="lazy" decoding="async" src="${esc(thumb)}" data-local="${esc(src)}" data-full="${esc(full)}" alt="${esc(e.title)}">`;
+    }).join("");
     return `<article class="card">
       <div class="imgs n${e.images.length}">${imgs}</div>
       <div class="body">
@@ -67,14 +71,39 @@
   });
   let t; $("#q").addEventListener("input", ev => { clearTimeout(t); t = setTimeout(() => { state.q = ev.target.value.trim().toLowerCase(); loadAll(); }, 200); });
 
+  let viewerToken = 0;
+  function openViewer(img) {
+    const v = $("#viewer");
+    const vimg = v.querySelector("img");
+    const local = img.dataset.local || img.currentSrc || img.src;
+    const full = img.dataset.full || local;
+    const tok = ++viewerToken;
+    vimg.src = local; // 立刻用本地图作占位
+    v.hidden = false;
+    document.body.style.overflow = "hidden";
+    if (full && full !== local) {
+      const hi = new Image();
+      hi.decoding = "async";
+      hi.onload = () => { if (tok === viewerToken && !v.hidden) vimg.src = full; };
+      hi.onerror = () => {}; // 远端失败则继续用本地
+      hi.src = full;
+    }
+  }
+  const closeViewer = () => {
+    viewerToken++;
+    const v = $("#viewer");
+    v.hidden = true;
+    v.querySelector("img").removeAttribute("src");
+    document.body.style.overflow = "";
+  };
+
   feed.addEventListener("click", ev => {
     const btn = ev.target.closest(".copy");
     if (btn) { for (const l of Object.values(state.loaded)) { const e = l.find(x => x.id === btn.dataset.id); if (e) return copy(e.prompt); } }
     const p = ev.target.closest(".prompt"); if (p) return p.classList.toggle("open");
     const img = ev.target.closest(".imgs img");
-    if (img) { const v = $("#viewer"); v.querySelector("img").src = img.dataset.full; v.hidden = false; document.body.style.overflow = "hidden"; }
+    if (img) openViewer(img);
   });
-  const closeViewer = () => { const v = $("#viewer"); v.hidden = true; v.querySelector("img").removeAttribute("src"); document.body.style.overflow = ""; };
   $("#viewer").addEventListener("click", ev => { if (ev.target.tagName !== "IMG") closeViewer(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeViewer(); });
   init();
