@@ -1,31 +1,41 @@
 {
- "updated": "2026-11-03T08:44:59+00:00",
+ "updated": "2026-11-03T10:07:24+00:00",
  "days": [
   {
    "date": "2026-11-03",
-   "count": 1,
+   "count": 56,
    "models": [
-    "Midjourney"
+    "GPT Image",
+    "Grok Imagine",
+    "Midjourney",
+    "Nano Banana",
+    "多模型对比",
+    "未注明"
    ]
   },
   {
    "date": "2026-11-02",
-   "count": 6,
+   "count": 60,
    "models": [
     "GPT Image",
     "Grok Imagine",
     "Midjourney",
-    "Nano Banana"
+    "Nano Banana",
+    "多模型对比",
+    "未注明"
    ]
   },
   {
    "date": "2026-11-01",
-   "count": 7,
+   "count": 100,
    "models": [
     "GPT Image",
     "Grok Imagine",
     "Midjourney",
-    "Nano Banana"
+    "Nano Banana",
+    "Seedream",
+    "多模型对比",
+    "未注明"
    ]
   },
   {
