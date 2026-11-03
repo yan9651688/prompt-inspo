@@ -1,4 +1,4 @@
-# 易拓灵感 · AI 生图提示词
+# 灵感图鉴 · AI 生图提示词
 
 每日从 X（Twitter）精选公开分享的 AI 生图提示词：缩略图预览、按模型筛选（Midjourney / Nano Banana / GPT Image / Grok Imagine / Seedream / Flux …）、全文搜索、一键复制提示词、按日期无限滚动。
 

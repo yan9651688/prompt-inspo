@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""易拓灵感 · 定时同步「如水如画」公开数据
+"""灵感图鉴 · 定时同步「如水如画」公开数据
 
 从 https://wangningashui-netizen.github.io/ai-prompts/ 的公开 JSON
 （data/index.json → data/YYYY-MM-DD.json）拉取新条目，按 id / 原帖链接 / 提示词去重，
@@ -49,6 +49,28 @@ def norm_prompt(p):
     return re.sub(r"\s+", " ", (p or "")).strip().lower()
 
 
+
+def make_local_thumb(src_abs):
+    """生成同目录 .thumb.webp；无 Pillow 时跳过。"""
+    base, _ = os.path.splitext(src_abs)
+    dest = base + ".thumb.webp"
+    if os.path.exists(dest) and os.path.getmtime(dest) >= os.path.getmtime(src_abs):
+        return dest
+    try:
+        from PIL import Image
+    except ImportError:
+        return None
+    try:
+        with Image.open(src_abs) as im:
+            im = im.convert("RGB")
+            im.thumbnail((360, 360 * 3))
+            im.save(dest, "WEBP", quality=72, method=4)
+        return dest
+    except Exception as ex:
+        log("  ! 缩略图失败", src_abs, ex)
+        return None
+
+
 def convert(e, date, root):
     author = e.get("author") or ""
     pid = str(e.get("id") or "")
@@ -60,7 +82,7 @@ def convert(e, date, root):
         if m.group(1) == "12" and date[5:7] == "01":
             y -= 1
         created = f"{y}-{m.group(1)}-{m.group(2)}T{m.group(3)}:{m.group(4)}:00"
-    locs, remotes = [], []
+    locs, remotes, thumbs = [], [], []
     for im in e.get("images") or []:
         if isinstance(im, str):
             im = {"remote": im}
@@ -79,13 +101,19 @@ def convert(e, date, root):
                 except Exception as ex:
                     log("  ! 图片下载失败", local, ex)
         path = path or remote
+        thumb_rel = ""
+        if path and not path.startswith("http"):
+            t_abs = make_local_thumb(os.path.join(root, path))
+            if t_abs:
+                thumb_rel = os.path.relpath(t_abs, root).replace("\\", "/")
         if path:
             locs.append(path); remotes.append(remote or path)
+            thumbs.append(thumb_rel or path)
     item = {
         "id": pid, "author": author, "author_name": e.get("author_name") or author, "url": url,
         "created_at": created, "models": [e.get("model") or e.get("group") or "未注明"],
         "title": e.get("title") or "", "note": e.get("note") or "", "prompt": e.get("prompt") or "",
-        "images": locs, "remote_images": remotes, "likes": int(e.get("likes") or 0), "source": SRC_NAME,
+        "images": locs, "thumbs": thumbs, "remote_images": remotes, "likes": int(e.get("likes") or 0), "source": SRC_NAME,
     }
     if not item["note"]:
         del item["note"]
