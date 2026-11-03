@@ -42,7 +42,7 @@
     if (state.next >= state.days.length) { sentinel.textContent = "— 已经到底啦 —"; return; }
     const day = state.days[state.next++];
     if (!state.loaded[day.date]) {
-      try { state.loaded[day.date] = await (await fetch(`data/${day.date}.json`)).json(); } catch { state.loaded[day.date] = []; }
+      try { state.loaded[day.date] = await (await fetch(`data/${day.date}.json?v=${state.ver}`, { cache: "no-cache" })).json(); } catch { state.loaded[day.date] = []; }
     }
     feed.insertAdjacentHTML("beforeend", renderDay(day));
     if (sentinel.getBoundingClientRect().top < innerHeight + 400) loadNext();
@@ -50,7 +50,7 @@
 
   async function init() {
     const idx = await (await fetch("data/index.json", { cache: "no-cache" })).json();
-    state.days = idx.days;
+    state.days = idx.days; state.ver = encodeURIComponent(idx.updated || Date.now());
     const total = idx.days.reduce((a, d) => a + d.count, 0);
     const models = ["全部", ...new Set(idx.days.flatMap(d => d.models))];
     $("#models").innerHTML = models.map(m => `<button class="chip${m === "全部" ? " on" : ""}" data-m="${esc(m)}">${esc(m)}</button>`).join("");
@@ -58,7 +58,7 @@
     new IntersectionObserver(es => es[0].isIntersecting && loadNext(), { rootMargin: "400px" }).observe(sentinel);
   }
 
-  async function loadAll() { while (state.next < state.days.length) { const d = state.days[state.next++]; if (!state.loaded[d.date]) state.loaded[d.date] = await (await fetch(`data/${d.date}.json`)).json(); } rerender(); sentinel.textContent = "— 已经到底啦 —"; }
+  async function loadAll() { while (state.next < state.days.length) { const d = state.days[state.next++]; if (!state.loaded[d.date]) state.loaded[d.date] = await (await fetch(`data/${d.date}.json?v=${state.ver}`, { cache: "no-cache" })).json(); } rerender(); sentinel.textContent = "— 已经到底啦 —"; }
 
   $("#models").addEventListener("click", ev => {
     const b = ev.target.closest(".chip"); if (!b) return;
