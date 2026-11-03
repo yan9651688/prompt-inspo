@@ -48,3 +48,15 @@ rsync -av --exclude raw --exclude .git ./ root@服务器:/srv/prompt-inspo/
 ```
 
 可用 cron 每天跑一次 collect.py + rsync。
+
+## 定时采集
+
+`scripts/sync_source.py` 从「如水如画」公开 JSON 拉取最近 7 天新条目（按 id / 链接 / 提示词去重），原子写入 `data/` 并重建 `index.json`，无需密钥。
+服务器上由 systemd timer 每 6 小时运行（UTC 00:15/06:15/12:15/18:15）：
+
+```
+cp deploy/prompt-inspo-collect.{service,timer} /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now prompt-inspo-collect.timer
+```
+
+日志：`/var/log/prompt-inspo-collect.log`；`flock` 防止重叠运行。`scripts/collect.py --api` 需要 `X_BEARER_TOKEN`，未加入定时任务。

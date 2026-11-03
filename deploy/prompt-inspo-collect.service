@@ -1,0 +1,9 @@
+[Unit]
+Description=prompt-inspo: sync new prompts from source site
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/srv/prompt-inspo/deploy/collect.sh
+TimeoutStartSec=1800
