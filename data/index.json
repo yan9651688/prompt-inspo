@@ -1,0 +1,50 @@
+{
+ "updated": "2026-11-03T08:44:59+00:00",
+ "days": [
+  {
+   "date": "2026-11-03",
+   "count": 1,
+   "models": [
+    "Midjourney"
+   ]
+  },
+  {
+   "date": "2026-11-02",
+   "count": 6,
+   "models": [
+    "GPT Image",
+    "Grok Imagine",
+    "Midjourney",
+    "Nano Banana"
+   ]
+  },
+  {
+   "date": "2026-11-01",
+   "count": 7,
+   "models": [
+    "GPT Image",
+    "Grok Imagine",
+    "Midjourney",
+    "Nano Banana"
+   ]
+  },
+  {
+   "date": "2026-10-31",
+   "count": 7,
+   "models": [
+    "GPT Image",
+    "Grok Imagine",
+    "Midjourney",
+    "Nano Banana"
+   ]
+  },
+  {
+   "date": "2026-10-30",
+   "count": 1,
+   "models": [
+    "GPT Image",
+    "Nano Banana"
+   ]
+  }
+ ]
+}
