@@ -72,9 +72,10 @@
     if (btn) { for (const l of Object.values(state.loaded)) { const e = l.find(x => x.id === btn.dataset.id); if (e) return copy(e.prompt); } }
     const p = ev.target.closest(".prompt"); if (p) return p.classList.toggle("open");
     const img = ev.target.closest(".imgs img");
-    if (img) { const v = $("#viewer"); v.querySelector("img").src = img.dataset.full; v.hidden = false; }
+    if (img) { const v = $("#viewer"); v.querySelector("img").src = img.dataset.full; v.hidden = false; document.body.style.overflow = "hidden"; }
   });
-  $("#viewer").addEventListener("click", () => { $("#viewer").hidden = true; });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") $("#viewer").hidden = true; });
+  const closeViewer = () => { const v = $("#viewer"); v.hidden = true; v.querySelector("img").removeAttribute("src"); document.body.style.overflow = ""; };
+  $("#viewer").addEventListener("click", ev => { if (ev.target.tagName !== "IMG") closeViewer(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeViewer(); });
   init();
 })();
